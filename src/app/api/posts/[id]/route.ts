@@ -3,7 +3,7 @@ import { MOCK_REELS } from "@/lib/mock-data";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
 
