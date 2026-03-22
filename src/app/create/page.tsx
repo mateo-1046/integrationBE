@@ -49,7 +49,7 @@ export default function CreatePage() {
 
       if (res && res[0]?.url) {
         setUploadedUrl(res[0].url);
-        toast.success("Archivo subido correctamente");
+        toast.success("Archivo subido correctamente en uploadthing");
       }
     } catch (error) {
       console.error(error);
@@ -205,8 +205,8 @@ export default function CreatePage() {
         <button
           type="submit"
           disabled={loading || uploading || !caption.trim() || !preview}
-          className="w-full py-3 rounded-xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors disabled:opacity-40"
-        >
+          className="w-full py-3 rounded-xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors disabled:opacity-40 disabled:hover:bg-blue-500">
+        
           {uploading ? "Subiendo..." : loading ? "Sharing..." : `Share ${tab}`}
         </button>
       </form>
