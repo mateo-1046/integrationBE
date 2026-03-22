@@ -203,7 +203,7 @@ function buildConversation(user: User, messages: { text: string; fromMe: boolean
   }));
 
   return {
-    id: `conv_${user.id}`,
+    id: `conv_${Math.floor(Math.random() * 1000000)}`,
     participant: user,
     messages: dms,
     lastMessage: dms[dms.length - 1],

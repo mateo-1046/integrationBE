@@ -21,6 +21,7 @@ export default function CreatePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const { startUpload } = useUploadThing(
     tab === "post" ? "imageUploader" : "videoUploader"
@@ -40,22 +41,29 @@ export default function CreatePage() {
     //      const [result] = await uploadFiles("imageUploader", { files: [file] });
     //      setUploadedUrl(result.url);
 
-    try {
-      const res = await startUpload([file]);
+setUploading(true);
 
-      if (res && res[0]?.url) {
-        setUploadedUrl(res[0].url);
-        toast.success("Imagen subida correctamente");
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Error subiendo imagen");
+  try {
+    const res = await startUpload([file]);
+
+    if (res && res[0]?.url) {
+      setUploadedUrl(res[0].url);
+      toast.success("Archivo subido correctamente");
     }
+  } catch (error) {
+    console.error(error);
+    toast.error("Error subiendo archivo");
+  } finally {
+    setUploading(false);
+  }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!uploadedUrl) { setError("Please select a file."); return; }
+    if (!uploadedUrl) {
+      toast.error("El archivo aún no termina de subirse");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -103,7 +111,11 @@ export default function CreatePage() {
         {(["post", "reel"] as Tab[]).map((t) => (
           <button
             key={t}
-            onClick={() => { setTab(t); setPreview(null); }}
+            onClick={() => {
+              setTab(t);
+              setPreview(null);
+              setUploadedUrl(null);
+            }}
             className={`flex-1 py-2 rounded-lg text-sm font-semibold capitalize transition-colors ${
               tab === t ? "bg-white shadow-sm" : "text-gray-500 hover:text-gray-700"
             }`}
@@ -119,12 +131,12 @@ export default function CreatePage() {
           onClick={() => fileRef.current?.click()}
           className="border-2 border-dashed border-gray-300 rounded-xl aspect-square flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors overflow-hidden"
         >
-          {uploadedUrl ? (
+          {preview ? (
             tab === "post" ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={uploadedUrl} alt="preview" className="w-full h-full object-cover" />
+              <img src={preview} alt="preview" className="w-full h-full object-cover" />
             ) : (
-              <video src={uploadedUrl} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+              <video src={preview} className="w-full h-full object-cover" muted loop autoPlay playsInline />
             )
           ) : (
             <div className="flex flex-col items-center gap-3 text-gray-400 p-8 text-center">
@@ -191,10 +203,10 @@ export default function CreatePage() {
 
         <button
           type="submit"
-          disabled={loading || !caption.trim() || !uploadedUrl}
+          disabled={loading || uploading || !caption.trim() || !preview}
           className="w-full py-3 rounded-xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors disabled:opacity-40"
         >
-          {loading ? "Sharing…" : `Share ${tab}`}
+          {uploading ? "Subiendo..." : loading ? "Sharing..." : `Share ${tab}`}
         </button>
       </form>
     </div>

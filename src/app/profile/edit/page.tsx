@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CURRENT_USER } from "@/lib/mock-data";
 import { useUploadThing } from "@/lib/uploadthing";
+import { toast } from "sonner";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -48,17 +49,29 @@ export default function EditProfilePage() {
     // TOD: Replace the URL below with your real backend endpoint.
     // Also pass `avatarUrl` from UploadThing once you integrate file uploads.
     // Example: fetch("https://your-api.com/profile", { method: "POST", ... })
-    await fetch("/api/profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+    try{
+       await fetch("/api/profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      toast.success("Photo updated successfully");
 
-    setSaved(true);
-    setLoading(false);
-    setTimeout(() => {
-      router.push(`/profile/${CURRENT_USER.username}`);
-      router.refresh();
-    }, 800);
+    }catch(error){
+      console.error("Error updating photo", error);
+      toast.error("Error updating photo");
+
+    }finally{
+      setSaved(true);
+      setLoading(false);
+      setTimeout(() => {
+        router.push(`/profile/${CURRENT_USER.username}`);
+        router.refresh();
+      }, 800);
+
+    }
+   
+
+    
   }
 
   return (

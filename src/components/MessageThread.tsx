@@ -41,7 +41,7 @@ export default function MessageThread({ initialConversation }: Props) {
     setText("");
     setSending(true);
 
-    // TOD: Change the URL below to your real backend endpoint.
+    // TODO: Change the URL below to your real backend endpoint.
     // Example: fetch("https://your-api.com/messages", { method: "POST", ... })
     try{
 

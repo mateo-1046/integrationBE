@@ -19,10 +19,18 @@ export default function StoriesBar() {
 
     const fetchData = async ()=>{
 
-      const storiesRef = await fetch("/api/stories");
-      const storiesData = await storiesRef.json();
+      try{
+        const storiesRef = await fetch("/api/stories");
+        const storiesData = await storiesRef.json();
 
-      setStories(storiesData);
+        setStories(storiesData);
+
+      }catch(error){
+
+        console.error("Error getting stories", error)
+
+      }
+      
 
     }
     fetchData();
