@@ -15,5 +15,4 @@ export const ourFileRouter = {
 
 } satisfies FileRouter;
 
-console.log("SECRET:", process.env.UPLOADTHING_SECRET);
 export type OurFileRouter = typeof ourFileRouter;

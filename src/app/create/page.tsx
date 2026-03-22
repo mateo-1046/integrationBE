@@ -41,21 +41,22 @@ export default function CreatePage() {
     //      const [result] = await uploadFiles("imageUploader", { files: [file] });
     //      setUploadedUrl(result.url);
 
-setUploading(true);
+    setUploading(true);
 
-  try {
-    const res = await startUpload([file]);
+    try {
+      const res = await startUpload([file]);
+     
 
-    if (res && res[0]?.url) {
-      setUploadedUrl(res[0].url);
-      toast.success("Archivo subido correctamente");
+      if (res && res[0]?.url) {
+        setUploadedUrl(res[0].url);
+        toast.success("Archivo subido correctamente");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error subiendo archivo");
+    } finally {
+      setUploading(false);
     }
-  } catch (error) {
-    console.error(error);
-    toast.error("Error subiendo archivo");
-  } finally {
-    setUploading(false);
-  }
   }
 
   async function handleSubmit(e: React.FormEvent) {
