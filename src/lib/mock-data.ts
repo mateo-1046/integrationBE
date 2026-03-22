@@ -192,8 +192,9 @@ export let MOCK_REELS: Reel[] = Array.from({ length: 10 }, (_, i) => ({
 }));
 
 // ── Direct Messages / Conversations ──────────────────────────
-
+let convCounter = 0;
 function buildConversation(user: User, messages: { text: string; fromMe: boolean; minsAgo: number }[]): Conversation {
+  
   const dms = messages.map((m, i) => ({
     id: `msg_${user.id}_${i}`,
     senderId: m.fromMe ? CURRENT_USER.id : user.id,
@@ -203,7 +204,7 @@ function buildConversation(user: User, messages: { text: string; fromMe: boolean
   }));
 
   return {
-    id: `conv_${Math.floor(Math.random() * 1000000)}`,
+    id: `conv_${convCounter++}`,
     participant: user,
     messages: dms,
     lastMessage: dms[dms.length - 1],
