@@ -17,7 +17,7 @@ export default function ReelCard({ reel }: Props) {
   async function handleLike() {
     setIsLiked((v) => !v);
     setLikesCount((v) => (isLiked ? v - 1 : v + 1));
-    // TOD (students): Call your real backend endpoint to like/unlike this reel
+    // TODO (students): Call your real backend endpoint to like/unlike this reel
     // Example: await fetch(`/api/reels/${reel.id}/like`, { method: "POST" })
 
     try{

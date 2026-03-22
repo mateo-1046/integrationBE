@@ -47,7 +47,7 @@ const followingUsers = async () => {
 
 
   useEffect(() => {
-    // TOD: Change the URL below to your real backend endpoint.
+    // TODO: Change the URL below to your real backend endpoint.
     // Example: fetch(`https://your-api.com/profile/${username}`)
     const fetchData = async ()=>{
 
@@ -109,7 +109,7 @@ const followingUsers = async () => {
               </Link>
             ) : (
               <>
-                {/* TOD: Wire to POST /api/profile/[username]/follow */}
+                {/* TODO: Wire to POST /api/profile/[username]/follow */}
                 <button className="px-6 py-1.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                         onClick={followUser}>
                   Follow
@@ -127,12 +127,12 @@ const followingUsers = async () => {
               <span className="text-sm text-gray-500 ml-1">posts</span>
             </div>
             <button className="hover:opacity-70">
-              {/* TOD: fetch("/api/profile/[username]/followers") */}
+              {/* TODO: fetch("/api/profile/[username]/followers") */}
               <span className="font-semibold" >{user.followersCount.toLocaleString()}</span>
               <span className="text-sm text-gray-500 ml-1" onClick={followerUsers}>followers</span>
             </button>
             <button className="hover:opacity-70">
-              {/* TOD: fetch("/api/profile/[username]/following") */}
+              {/* TODO: fetch("/api/profile/[username]/following") */}
               <span className="font-semibold" >{user.followingCount.toLocaleString()}</span>
               <span className="text-sm text-gray-500 ml-1" onClick={followingUsers}>following</span>
             </button>
@@ -160,7 +160,7 @@ const followingUsers = async () => {
           </svg>
           Posts
         </button>
-        {/* TOD: fetch(`/api/profile/${username}/reels`) on tab click */}
+        {/* TODO: fetch(`/api/profile/${username}/reels`) on tab click */}
         <button  onClick={() => setTab("reels")}
         className={`flex items-center gap-1.5 py-3 text-xs font-semibold uppercase tracking-widest ${tab === "reels"? " border-gray-900" : "text-gray-400" }`}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
@@ -178,7 +178,7 @@ const followingUsers = async () => {
         )}
       </div>
 
-      {/* TOD (students): Render the posts grid here.
+      {/* TODO (students): Render the posts grid here.
            `posts` is an array of Post objects fetched above.
            Each post has: id, imageUrl, caption, likesCount, commentsCount, author.
            Display them in a 3-column grid (use grid grid-cols-3 gap-0.5).

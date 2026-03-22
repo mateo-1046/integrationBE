@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 // Stories bar — purely visual mock. Students can wire it to a real stories API.
-// TOD (students): Fetch real stories from your backend endpoint (e.g. GET /api/stories)
+// TODO (students): Fetch real stories from your backend endpoint (e.g. GET /api/stories)
 type Story = {
   username: string;
   seed: string;

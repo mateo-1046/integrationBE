@@ -9,7 +9,7 @@ export default function ReelsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect( () => {
-    // TOD: Change the URL below to your real backend endpoint.
+    // TODO: Change the URL below to your real backend endpoint.
     // Example: fetch("https://your-api.com/reels")
 
     const fetchData = async () => {

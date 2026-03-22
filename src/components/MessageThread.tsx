@@ -45,10 +45,9 @@ export default function MessageThread({ initialConversation }: Props) {
     // Example: fetch("https://your-api.com/messages", { method: "POST", ... })
     try{
 
-      const res = await fetch("/api/messages", {
+       await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(messages),
       });
 
       toast.success("Messages sended successfully");
@@ -118,7 +117,7 @@ export default function MessageThread({ initialConversation }: Props) {
 
       {/* Input */}
       <form onSubmit={handleSend} className="flex items-center gap-3 px-4 py-3 border-t border-gray-200">
-        {/* TOD: Add a file picker here for media messages.
+        {/* TODO: Add a file picker here for media messages.
             After picking a file, upload it with UploadThing and pass the returned URL
             as `mediaUrl` in the fetch body above. */}
 

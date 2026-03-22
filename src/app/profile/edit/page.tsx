@@ -25,7 +25,7 @@ export default function EditProfilePage() {
     if (!file) return;
     setAvatarPreview(URL.createObjectURL(file));
 
-    // TOD: Upload the avatar with UploadThing and save the returned URL.
+    // TODO: Upload the avatar with UploadThing and save the returned URL.
     // Example:
     //   const [result] = await uploadFiles("imageUploader", { files: [file] });
     //   setUploadedAvatarUrl(result.url);
@@ -51,7 +51,6 @@ export default function EditProfilePage() {
     await fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, bio, website, avatar: avatarUrl ?? avatarPreview, }),
     });
 
     setSaved(true);
