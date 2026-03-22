@@ -2,19 +2,78 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { User, Post } from "@/lib/types";
+import { User, Post, Reel } from "@/lib/types";
 import { CURRENT_USER } from "@/lib/mock-data";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reels, setReels] = useState<Reel[]>([]);
+  const [tab, setTab] = useState<"posts" | "reels">("posts");
+
+const followUser = async () => {
+  try {
+    await fetch(`/api/profile/${username}/follow`, { method: "POST" });
+    toast.success("User followed successfully");
+  } catch (error) {
+    console.error("Error following user", error);
+    toast.error("Error following user");
+  }
+};
+
+const followerUsers = async () => {
+  try {
+    await fetch(`/api/profile/${username}/followers`);
+    toast.success("Followers loaded successfully");
+  } catch (error) {
+    console.error("Error fetching followers", error);
+    toast.error("Error loading followers");
+  }
+};
+
+const followingUsers = async () => {
+  try {
+    await fetch(`/api/profile/${username}/following`);
+    toast.success("Following loaded successfully");
+  } catch (error) {
+    console.error("Error fetching following", error);
+    toast.error("Error loading following");
+  }
+};
+
 
   useEffect(() => {
-    // TODO: Change the URL below to your real backend endpoint.
+    // TOD: Change the URL below to your real backend endpoint.
     // Example: fetch(`https://your-api.com/profile/${username}`)
+    const fetchData = async ()=>{
+
+      try {
+        const userRes = await fetch(`/api/profile/${username}`);
+        const userData = await userRes.json();
+
+        setUser(userData.user);
+        setPosts(userData.posts);
+        
+
+        const reelsRes = await fetch(`/api/profile/${username}/reels`);
+        const reelsData = await reelsRes.json();
+        setReels(reelsData);
+
+        
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      } finally {
+        setLoading(false);
+      }
+
+
+    }
+
+    fetchData();
 
   }, [username]);
 
@@ -50,8 +109,9 @@ export default function ProfilePage() {
               </Link>
             ) : (
               <>
-                {/* TODO: Wire to POST /api/profile/[username]/follow */}
-                <button className="px-6 py-1.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                {/* TOD: Wire to POST /api/profile/[username]/follow */}
+                <button className="px-6 py-1.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        onClick={followUser}>
                   Follow
                 </button>
                 <Link href="/messages" className="px-4 py-1.5 text-sm font-semibold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
@@ -67,14 +127,14 @@ export default function ProfilePage() {
               <span className="text-sm text-gray-500 ml-1">posts</span>
             </div>
             <button className="hover:opacity-70">
-              {/* TODO: fetch("/api/profile/[username]/followers") */}
-              <span className="font-semibold">{user.followersCount.toLocaleString()}</span>
-              <span className="text-sm text-gray-500 ml-1">followers</span>
+              {/* TOD: fetch("/api/profile/[username]/followers") */}
+              <span className="font-semibold" >{user.followersCount.toLocaleString()}</span>
+              <span className="text-sm text-gray-500 ml-1" onClick={followerUsers}>followers</span>
             </button>
             <button className="hover:opacity-70">
-              {/* TODO: fetch("/api/profile/[username]/following") */}
-              <span className="font-semibold">{user.followingCount.toLocaleString()}</span>
-              <span className="text-sm text-gray-500 ml-1">following</span>
+              {/* TOD: fetch("/api/profile/[username]/following") */}
+              <span className="font-semibold" >{user.followingCount.toLocaleString()}</span>
+              <span className="text-sm text-gray-500 ml-1" onClick={followingUsers}>following</span>
             </button>
           </div>
 
@@ -91,15 +151,18 @@ export default function ProfilePage() {
       </div>
 
       {/* Tabs */}
-      <div className="border-t border-gray-200 flex justify-center gap-10 mb-6">
-        <button className="flex items-center gap-1.5 py-3 border-t-2 border-gray-900 text-xs font-semibold uppercase tracking-widest">
+      <div className="border-t border-gray-200 flex justify-center gap-10 mb-6"> 
+      
+        <button onClick={() => setTab("posts")}
+        className={` gap-1.5 py-3 border-t-2 border-gray-900 text-xs font-semibold uppercase tracking-widest  ${tab === "posts"? "border-gray-900" : "text-gray-400" }`}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
           </svg>
           Posts
         </button>
-        {/* TODO: fetch(`/api/profile/${username}/reels`) on tab click */}
-        <button className="flex items-center gap-1.5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400">
+        {/* TOD: fetch(`/api/profile/${username}/reels`) on tab click */}
+        <button  onClick={() => setTab("reels")}
+        className={`flex items-center gap-1.5 py-3 text-xs font-semibold uppercase tracking-widest ${tab === "reels"? " border-gray-900" : "text-gray-400" }`}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 9h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 20.625v-9.75C1.5 9.839 2.34 9 3.375 9z" />
           </svg>
@@ -115,18 +178,37 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {/* TODO (students): Render the posts grid here.
+      {/* TOD (students): Render the posts grid here.
            `posts` is an array of Post objects fetched above.
            Each post has: id, imageUrl, caption, likesCount, commentsCount, author.
            Display them in a 3-column grid (use grid grid-cols-3 gap-0.5).
            Each cell should be aspect-square with the post image filling it.
            Optionally show a hover overlay with likes/comments counts. */}
-      <div className="flex flex-col items-center gap-3 py-16 text-gray-400">
-        <p className="font-semibold text-lg">Posts grid coming soon</p>
-        <p className="text-sm text-center max-w-xs">
-          Implement the posts grid in <code className="bg-gray-100 px-1 rounded text-gray-600">src/app/profile/[username]/page.tsx</code>
-        </p>
+
+      <div className="grid grid-cols-3 gap-0.5">
+        {tab =="posts" && posts.map((post) => (
+          <div key={post.id} className="aspect-square">
+            <img
+              src={post.imageUrl}
+              alt={post.caption}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ))}
+        {tab =="reels" && reels.map((reel) => (
+          <div key={reel.id} className="aspect-square">
+             <video
+              src={reel.videoUrl}
+              className="w-full h-full object-cover"
+              muted
+              loop
+              autoPlay
+            />
+          </div>
+        ))}
       </div>
+
+      
     </div>
   );
 }

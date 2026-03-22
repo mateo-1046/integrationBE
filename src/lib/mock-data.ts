@@ -12,6 +12,16 @@
 
 import { User, Post, Reel, Conversation, Comment } from "@/lib/types";
 
+
+export const MOCK_STORIES = [
+  { username: "yourhandle", seed: "current", isOwn: true },
+  { username: "alex.photo", seed: "alex", isOwn: false },
+  { username: "maya.art", seed: "maya", isOwn: false },
+  { username: "javier.cooks", seed: "javier", isOwn: false },
+  { username: "sofia.travels", seed: "sofia", isOwn: false },
+  { username: "kai.fitness", seed: "kai", isOwn: false },
+];
+
 // ── Users ────────────────────────────────────────────────────
 
 export const CURRENT_USER: User = {

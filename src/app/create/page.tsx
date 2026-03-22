@@ -2,6 +2,12 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useUploadThing } from "@/lib/uploadthing";
+
+
+
+
+import { toast } from "sonner";
 
 type Tab = "post" | "reel";
 
@@ -16,7 +22,12 @@ export default function CreatePage() {
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const { startUpload } = useUploadThing(
+    tab === "post" ? "imageUploader" : "videoUploader"
+  );
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     // Show a local preview so the user can see what they picked
@@ -28,11 +39,23 @@ export default function CreatePage() {
     // 3. Upload and save the URL:
     //      const [result] = await uploadFiles("imageUploader", { files: [file] });
     //      setUploadedUrl(result.url);
+
+    try {
+      const res = await startUpload([file]);
+
+      if (res && res[0]?.url) {
+        setUploadedUrl(res[0].url);
+        toast.success("Imagen subida correctamente");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error subiendo imagen");
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!preview) { setError("Please select a file."); return; }
+    if (!uploadedUrl) { setError("Please select a file."); return; }
 
     setLoading(true);
     setError(null);
@@ -45,8 +68,10 @@ export default function CreatePage() {
         await fetch("/api/posts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageUrl: preview, caption, location }),
+          body: JSON.stringify({ imageUrl: uploadedUrl, caption, location }),
         });
+
+        toast.success("Post creado con éxito");
       } else {
         // TODO: Replace `preview` with the real URL returned by UploadThing after upload.
         // TODO: Change the URL below to your real backend endpoint.
@@ -54,8 +79,10 @@ export default function CreatePage() {
         await fetch("/api/reels", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ videoUrl: preview, thumbnailUrl: preview, caption, audioTrack }),
+          body: JSON.stringify({ videoUrl: uploadedUrl, thumbnailUrl: uploadedUrl, caption, audioTrack }),
         });
+
+        toast.success("Reel creado con éxito");
       }
 
       router.push("/");
@@ -92,12 +119,12 @@ export default function CreatePage() {
           onClick={() => fileRef.current?.click()}
           className="border-2 border-dashed border-gray-300 rounded-xl aspect-square flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors overflow-hidden"
         >
-          {preview ? (
+          {uploadedUrl ? (
             tab === "post" ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={preview} alt="preview" className="w-full h-full object-cover" />
+              <img src={uploadedUrl} alt="preview" className="w-full h-full object-cover" />
             ) : (
-              <video src={preview} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+              <video src={uploadedUrl} className="w-full h-full object-cover" muted loop autoPlay playsInline />
             )
           ) : (
             <div className="flex flex-col items-center gap-3 text-gray-400 p-8 text-center">
@@ -109,6 +136,7 @@ export default function CreatePage() {
                 {tab === "post" ? "JPEG, PNG, WEBP" : "MP4, MOV"}
               </p>
               {/* TODO: Replace this area with <UploadDropzone> from @uploadthing/react */}
+              
             </div>
           )}
         </div>
@@ -163,7 +191,7 @@ export default function CreatePage() {
 
         <button
           type="submit"
-          disabled={loading || !caption.trim() || !preview}
+          disabled={loading || !caption.trim() || !uploadedUrl}
           className="w-full py-3 rounded-xl bg-blue-500 text-white font-semibold text-sm hover:bg-blue-600 transition-colors disabled:opacity-40"
         >
           {loading ? "Sharing…" : `Share ${tab}`}

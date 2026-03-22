@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { Conversation, DirectMessage } from "@/lib/types";
 import { CURRENT_USER } from "@/lib/mock-data";
 import { formatDistanceToNow } from "@/lib/utils";
+import { toast } from "sonner";
+import { useUploadThing } from "@/lib/uploadthing";
 
 interface Props {
   initialConversation: Conversation;
@@ -14,6 +16,10 @@ export default function MessageThread({ initialConversation }: Props) {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { startUpload } = useUploadThing("imageUploader"); 
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,10 +41,40 @@ export default function MessageThread({ initialConversation }: Props) {
     setText("");
     setSending(true);
 
-    // TODO: Change the URL below to your real backend endpoint.
+    // TOD: Change the URL below to your real backend endpoint.
     // Example: fetch("https://your-api.com/messages", { method: "POST", ... })
+    try{
+
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(messages),
+      });
+
+      toast.success("Messages sended successfully");
+
+    }catch(error){
+      console.error("Erroe send messages")
+    }
 
     setSending(false);
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const res = await startUpload([file]);
+
+      if (res && res[0]?.url) {
+        setMediaUrl(res[0].url);
+        toast.success("Archivo subido");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error subiendo archivo");
+    }
   }
 
   return (
@@ -82,9 +118,24 @@ export default function MessageThread({ initialConversation }: Props) {
 
       {/* Input */}
       <form onSubmit={handleSend} className="flex items-center gap-3 px-4 py-3 border-t border-gray-200">
-        {/* TODO: Add a file picker here for media messages.
+        {/* TOD: Add a file picker here for media messages.
             After picking a file, upload it with UploadThing and pass the returned URL
             as `mediaUrl` in the fetch body above. */}
+
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="text-gray-500 text-lg"
+        >
+          !Adjuntar aqui jijiji¡
+        </button>
+
+        <input
+          ref={fileRef}
+          type="file"
+          className="hidden"
+          onChange={handleFileChange}
+        />
         <input
           type="text"
           value={text}

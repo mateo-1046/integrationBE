@@ -1,21 +1,36 @@
 "use client";
 
-// Stories bar — purely visual mock. Students can wire it to a real stories API.
-// TODO (students): Fetch real stories from your backend endpoint (e.g. GET /api/stories)
+import { useEffect, useState } from "react";
 
-const MOCK_STORIES = [
-  { username: "yourhandle", seed: "current", isOwn: true },
-  { username: "alex.photo", seed: "alex", isOwn: false },
-  { username: "maya.art", seed: "maya", isOwn: false },
-  { username: "javier.cooks", seed: "javier", isOwn: false },
-  { username: "sofia.travels", seed: "sofia", isOwn: false },
-  { username: "kai.fitness", seed: "kai", isOwn: false },
-];
+// Stories bar — purely visual mock. Students can wire it to a real stories API.
+// TOD (students): Fetch real stories from your backend endpoint (e.g. GET /api/stories)
+type Story = {
+  username: string;
+  seed: string;
+  isOwn?: boolean;
+};
+
 
 export default function StoriesBar() {
+
+  const [stories, setStories] = useState<Story[]>([]);
+
+  useEffect(()=>{
+
+    const fetchData = async ()=>{
+
+      const storiesRef = await fetch("/api/stories");
+      const storiesData = await storiesRef.json();
+
+      setStories(storiesData);
+
+    }
+    fetchData();
+
+  },[]);
   return (
     <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide bg-white border border-gray-200 rounded-xl px-4 py-3">
-      {MOCK_STORIES.map(({ username, seed, isOwn }) => (
+      {stories.map(({ username, seed, isOwn }) => (
         <button key={username} className="flex flex-col items-center gap-1 flex-shrink-0">
           <div
             className={`w-14 h-14 rounded-full p-0.5 ${

@@ -8,9 +8,26 @@ export default function ReelsPage() {
   const [reels, setReels] = useState<Reel[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // TODO: Change the URL below to your real backend endpoint.
+  useEffect( () => {
+    // TOD: Change the URL below to your real backend endpoint.
     // Example: fetch("https://your-api.com/reels")
+
+    const fetchData = async () => {
+      try{
+
+        const reelsRef = await fetch("/api/reels");
+        const reelsData = await reelsRef.json();
+
+        setReels(reelsData);
+
+      }catch(error){
+        console.log("Error get reels")
+      }finally{
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (loading) return <div className="flex justify-center py-20 text-gray-400">Loading reels…</div>;

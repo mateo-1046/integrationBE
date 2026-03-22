@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CURRENT_USER } from "@/lib/mock-data";
+import { useUploadThing } from "@/lib/uploadthing";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -13,29 +14,44 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { startUpload } = useUploadThing("imageUploader");
+  
 
-  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarPreview(URL.createObjectURL(file));
 
-    // TODO: Upload the avatar with UploadThing and save the returned URL.
+    // TOD: Upload the avatar with UploadThing and save the returned URL.
     // Example:
     //   const [result] = await uploadFiles("imageUploader", { files: [file] });
     //   setUploadedAvatarUrl(result.url);
+    try {
+      const res = await startUpload([file]);
+
+      if (res && res[0]?.url) {
+        setAvatarUrl(res[0].url);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
-    // TODO: Replace the URL below with your real backend endpoint.
+    // TOD: Replace the URL below with your real backend endpoint.
     // Also pass `avatarUrl` from UploadThing once you integrate file uploads.
     // Example: fetch("https://your-api.com/profile", { method: "POST", ... })
     await fetch("/api/profile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, bio, website }),
+      body: JSON.stringify({ name, bio, website, avatar: avatarUrl ?? avatarPreview, }),
     });
 
     setSaved(true);

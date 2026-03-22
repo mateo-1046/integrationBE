@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Reel } from "@/lib/types";
 import { formatDistanceToNow } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Props {
   reel: Reel;
@@ -13,11 +14,22 @@ export default function ReelCard({ reel }: Props) {
   const [isLiked, setIsLiked] = useState(reel.isLiked);
   const [likesCount, setLikesCount] = useState(reel.likesCount);
 
-  function handleLike() {
+  async function handleLike() {
     setIsLiked((v) => !v);
     setLikesCount((v) => (isLiked ? v - 1 : v + 1));
-    // TODO (students): Call your real backend endpoint to like/unlike this reel
+    // TOD (students): Call your real backend endpoint to like/unlike this reel
     // Example: await fetch(`/api/reels/${reel.id}/like`, { method: "POST" })
+
+    try{
+
+        await fetch(`/api/reels/${reel.id}/like`, { method: "POST" });
+        toast.success("Reel liked successfully");
+  
+    }catch(error){
+      console.error("Error liking reel",error)
+      toast.error("Error liking reel");
+
+    }
   }
 
   return (
